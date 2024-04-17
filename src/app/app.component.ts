@@ -5,6 +5,7 @@ import users from 'assets/users.json';
 import { CommonModule } from '@angular/common';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { User } from './models/user';
+import { UserService } from './services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -15,12 +16,11 @@ import { User } from './models/user';
 })
 export class AppComponent {
   users: User[] = users
-  currentUser: User = users[0]
-
-  constructor() {
+  
+  constructor(public userService: UserService) {
   }
 
   onUserChange(user: User) {
-    this.currentUser = user
+    this.userService.currentUser = user
   }
 }

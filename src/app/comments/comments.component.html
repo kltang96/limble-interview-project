@@ -1,5 +1,12 @@
 <h2>Comments</h2>
 
+<div class="inheritall" #content contenteditable class="comment-input"
+  (change)="onCommentFormChange()"
+  (paste)="onCommentFormPaste($event)"
+  (drop)="onCommentFormDrag($event)"
+>
+</div>
+<button [disabled]="!newCommentContent.valid" (click)="onSubmit()" (mousedown)="stopEvent($event)">Submit</button>
 
 <ng-container *ngFor="let comment of comments">
   <app-comment [comment]="comment"></app-comment>
