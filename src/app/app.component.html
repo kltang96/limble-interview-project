@@ -1,0 +1,16 @@
+<div class="container">
+  <app-notifications></app-notifications>
+</div>
+
+<div class="container">
+  <h2>User</h2>
+
+  <ng-container *ngFor="let user of users; let index = index">
+    <input type="radio" [id]="user.name" name="users" [value]="user.userID" [checked]="user.userID===currentUser.userID" (change)="onUserChange(user)">
+    <label [for]="user.name">{{user.name}}</label><br>
+  </ng-container>
+</div>
+
+<div class="container">
+  <app-comments></app-comments>
+</div>
