@@ -1,6 +1,40 @@
+.comment-input-container {
+  margin: 0.5rem;
+  position: relative;
+}
+
 .comment-input {
   background-color: white;
   border: 1px solid black;
-  margin: 0.5rem;
   padding: 0.5rem;
+  min-height: 2rem;
+  max-height: 4rem;
+  overflow-y: scroll;
+  white-space: pre-wrap;
+}
+
+ping {
+  font-weight: bold;
+  color: blue;
+  user-select: all;
+  display: inline;
+}
+
+menu {
+  background-color: white;
+  position: absolute;
+  z-index: 1000;
+  margin: 0;
+  padding: 0;
+  box-shadow: 0 3px 10px black;
+}
+
+li {
+  list-style-type: none;
+  padding: 0.25rem 2rem;
+}
+
+li:hover {
+  background-color: lightgray;
+  cursor: pointer;
 }

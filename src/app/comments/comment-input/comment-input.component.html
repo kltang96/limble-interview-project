@@ -1,7 +1,17 @@
-<div class="inheritall" #content contenteditable class="comment-input"
-  (change)="onCommentFormChange()"
-  (paste)="onCommentFormPaste($event)"
-  (drop)="onCommentFormDrag($event)"
->
+<div class="comment-input-container">
+  <div #content contenteditable class="comment-input"
+    (keyup)="onKeyUp($event)"
+    (change)="onCommentFormChange()"
+    (paste)="onCommentFormPaste($event)"
+    (drop)="onCommentFormDrag($event)"
+  ><div></div>
+  </div>
+  <menu name="user" *ngIf="showMenu">
+    <li *ngFor="let user of userService.users; let index = index" [value]="user"
+      (mousedown)="stopEvent($event)"
+      (click)="insertPing(user)"
+    >{{user.name}}</li>
+  </menu>
 </div>
-<button [disabled]="!newCommentContent.valid" (click)="onSubmit()" (mousedown)="stopEvent($event)">Submit</button>
+
+<button [disabled]="!newCommentContent.valid" (click)="onSubmit()">Submit</button>
