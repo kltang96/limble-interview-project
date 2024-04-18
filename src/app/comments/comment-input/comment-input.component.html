@@ -7,7 +7,7 @@
   ><div></div>
   </div>
   <menu name="user" *ngIf="showMenu">
-    <li *ngFor="let user of userService.users; let index = index" [value]="user"
+    <li *ngFor="let user of users; let index = index" [value]="user"
       (mousedown)="stopEvent($event)"
       (click)="insertPing(user)"
     >{{user.name}}</li>

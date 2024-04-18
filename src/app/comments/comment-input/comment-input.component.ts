@@ -15,13 +15,17 @@ import { User } from 'app/models/user';
 })
 export class CommentInputComponent {
   newCommentContent: FormControl = new FormControl('', Validators.required)
-  showMenu = true
+  showMenu = false
+  pingInitPosition: number | undefined
+  users: User[]
 
   @ViewChild('content') content: ElementRef = new ElementRef('div')
 
   @Output() submitComment: EventEmitter<string> = new EventEmitter<string>()
 
-  constructor(public userService: UserService) { }
+  constructor(public userService: UserService) {
+    this.users = userService.users
+  }
 
   @HostListener('input')
   onCommentFormChange() {
@@ -57,12 +61,32 @@ export class CommentInputComponent {
 
   onKeyUp($event: any) {
 
+    let cursorPosition = window.getSelection()?.getRangeAt(0).startOffset ?? 0
+    let currentNode = window.getSelection()?.getRangeAt(0).commonAncestorContainer
+
+    let isShowMenuEvent = $event.key === "@"
+      && (cursorPosition <= 1 //this checks if the key was typed immediately at the beginning of an html tag
+        || currentNode?.nodeValue?.charAt(cursorPosition-2) === ' ') // OR if it was typed after a space
+
+    if(isShowMenuEvent) {
+      this.showMenu = true
+      this.pingInitPosition = cursorPosition
+    }
+
+    if(this.showMenu) {
+      if(this.pingInitPosition != null) {
+        let userFilter = currentNode?.nodeValue?.substring(this.pingInitPosition, cursorPosition) ?? ''
+        this.users = this.userService.users.filter(user => {return user.name.toLowerCase().includes(userFilter.toLowerCase())})
+      }
+    }
   }
 
   insertPing(user: User) {
     if(this.content.nativeElement === document.activeElement) {
       this._insertPingTag(user)
     }
+    this.onCommentFormChange()
+    this._resetMenuEvent()
   }
 
   private _insertPingTag(user: User) {
@@ -79,7 +103,12 @@ export class CommentInputComponent {
     selection.getRangeAt(0).insertNode(document.createTextNode(' '));
 
     selection.collapseToEnd()
-    this.onCommentFormChange()
+  }
+
+  _resetMenuEvent() {
+    this.showMenu = false
+    this.pingInitPosition = undefined
+    this.users = this.userService.users
   }
 
   onSubmit() {
