@@ -1,5 +1,6 @@
 <div class="comment-input-container">
   <div #content contenteditable class="comment-input"
+    (keydown)="onKeyDown($event)"
     (keyup)="onKeyUp($event)"
     (change)="onCommentFormChange()"
     (paste)="onCommentFormPaste($event)"

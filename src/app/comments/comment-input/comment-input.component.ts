@@ -59,6 +59,19 @@ export class CommentInputComponent {
     this.onCommentFormChange()
   }
 
+  onKeyDown($event: any) {
+    if(this.showMenu) {
+      if($event.key === 'Tab' || $event.key === ' ') {
+        this.resetMenuEvent()
+        $event.preventDefault()
+      }
+      if($event.key === 'Enter') {
+        this.insertPing(this.users[0])
+        $event.preventDefault()
+      }
+    }
+  }
+
   onKeyUp($event: any) {
 
     let cursorPosition = window.getSelection()?.getRangeAt(0).startOffset ?? 0
@@ -74,15 +87,14 @@ export class CommentInputComponent {
     }
 
     if(this.showMenu) {
-      if($event.key === 'Tab' || $event.key === ' ') {
-        this.resetMenuEvent()
-        $event.preventDefault()
-      }
-      else if(this.pingInitPosition != null && currentNode != null) {
+      if(this.pingInitPosition != null && currentNode != null) {
         let userFilter = currentNode.nodeValue?.substring(this.pingInitPosition, cursorPosition) ?? ''
         this.users = this.userService.users.filter(
           user => {return user.name.toLowerCase().includes(userFilter.toLowerCase())}
         )
+        if(this.users.length === 0) {
+          this.resetMenuEvent()
+        }
         this.pingRange = document.createRange()
         this.pingRange.setStart(currentNode, this.pingInitPosition-1)
         this.pingRange.setEnd(currentNode, cursorPosition)
@@ -100,11 +112,16 @@ export class CommentInputComponent {
 
   private _insertPingTag(user: User) {
     const selection = window.getSelection();
-    if (!selection?.rangeCount) return;
+
+    if (!selection?.rangeCount) {
+      return
+    }
     if(this.pingRange != null) {
       selection.addRange(this.pingRange)
     }
+
     selection.deleteFromDocument();
+    selection.collapseToEnd()
 
     let ping = document.createElement('ping')
     ping.innerHTML = '@' + user.name
