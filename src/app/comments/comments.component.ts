@@ -27,6 +27,7 @@ export class CommentsComponent {
       content: content
     }
 
+    // this would be done on the backend
     this.notificationService.updateNotificationBasedOnComment(comment)
 
     comments.unshift(comment)

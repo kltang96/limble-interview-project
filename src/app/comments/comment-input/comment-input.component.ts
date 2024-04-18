@@ -30,20 +30,23 @@ export class CommentInputComponent {
 
   @HostListener('input')
   onCommentFormChange() {
-    let sanitizedHtml = stripHtml(this.content.nativeElement.innerHTML, {ignoreTags: ['ping', 'div', 'br']}).result
+    let sanitizedHtml = stripHtml(this.content.nativeElement.innerHTML, {ignoreTags: ['ping', 'br']}).result
     this.newCommentContent.setValue(sanitizedHtml)
   }
 
   onCommentFormPaste($event: ClipboardEvent) {
     $event.preventDefault()
-    let sanitizedHtml = stripHtml($event.clipboardData?.getData("text/html") || '', {ignoreTags: ['ping', 'div', 'br']}).result
+    let sanitizedHtml = stripHtml(
+      $event.clipboardData?.getData("text/html") || $event.clipboardData?.getData("text/plain") || '',
+      {ignoreTags: ['ping', 'br']}).result
     this._manualPaste(sanitizedHtml)
   }
 
-
   onCommentFormDrag($event: DragEvent) {
     $event.preventDefault()
-    let sanitizedHtml = stripHtml($event.dataTransfer?.getData("text/html") || '', {ignoreTags: ['ping', 'div', 'br']}).result
+    let sanitizedHtml = stripHtml(
+      $event.dataTransfer?.getData("text/html") || $event.dataTransfer?.getData("text/plain") || '',
+      {ignoreTags: ['ping', 'br']}).result
     this._manualPaste(sanitizedHtml)
   }
 
@@ -73,6 +76,11 @@ export class CommentInputComponent {
         $event.preventDefault()
       }
     }
+    else {
+      if($event.key === 'Enter') {
+        $event.preventDefault()
+      }
+    }
   }
 
   onKeyUp($event: any) {
@@ -80,8 +88,8 @@ export class CommentInputComponent {
     let cursorPosition = window.getSelection()?.getRangeAt(0).startOffset ?? 0
     let currentNode = window.getSelection()?.getRangeAt(0).commonAncestorContainer
 
-    let isShowMenuEvent = currentNode?.nodeValue?.charAt(cursorPosition-1) === "@" // check that @ was just typed
-      && (cursorPosition <= 1 //this checks if the key was typed immediately at the beginning of an html tag
+    let isShowMenuEvent = currentNode?.nodeValue?.charAt(cursorPosition-1) === "@" // check that @ is at cursor
+      && (cursorPosition <= 1 // checks if the key was typed immediately at the beginning of an html tag
         || currentNode?.nodeValue?.charAt(cursorPosition-2) === ' ') // OR if it was typed after a space
 
     if(isShowMenuEvent) {
@@ -94,6 +102,8 @@ export class CommentInputComponent {
         this.resetMenuEvent()
       }
       if(this.pingInitPosition != null && currentNode != null) {
+
+        // filter users based on input
         let userFilter = currentNode.nodeValue?.substring(this.pingInitPosition, cursorPosition) ?? ''
         this.users = this.userService.users.filter(
           user => {return user.name.toLowerCase().includes(userFilter.toLowerCase())}
@@ -101,6 +111,8 @@ export class CommentInputComponent {
         if(this.users.length === 0) {
           this.resetMenuEvent()
         }
+
+        // tracks what text to replace if the user selectes a ping
         this.pingRange = document.createRange()
         this.pingRange.setStart(currentNode, this.pingInitPosition-1)
         this.pingRange.setEnd(currentNode, cursorPosition)
@@ -123,19 +135,20 @@ export class CommentInputComponent {
       return
     }
     if(this.pingRange != null) {
+      selection.removeAllRanges() // Chrome requires this, Firefox does not. Firefox may not be following spec.
       selection.addRange(this.pingRange)
     }
 
     selection.deleteFromDocument();
     selection.collapseToEnd()
 
+    // creates the <ping> tag: <ping userId="#" contenteditable="false">[arbitrary_text]<ping>
     let ping = document.createElement('ping')
     ping.innerHTML = '@' + user.name
     ping.setAttribute('userId', user.userID.toString());
     ping.setAttribute('contenteditable', "false");
     selection.getRangeAt(0).insertNode(document.createTextNode(' '));
     selection.getRangeAt(0).insertNode(ping);
-    selection.getRangeAt(0).insertNode(document.createTextNode(' '));
 
     selection.collapseToEnd()
   }

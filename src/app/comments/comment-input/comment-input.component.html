@@ -1,4 +1,5 @@
 <div class="comment-input-container">
+  <!-- this contenteditable div only allows <ping> and <br> tags -->
   <div #content contenteditable class="comment-input"
     (keydown)="onKeyDown($event)"
     (keyup)="onKeyUp($event)"
@@ -6,7 +7,7 @@
     (paste)="onCommentFormPaste($event)"
     (drop)="onCommentFormDrag($event)"
     (blur)="resetMenuEvent()"
-  ><div></div>
+  >
   </div>
   <menu name="user" *ngIf="showMenu">
     <li *ngFor="let user of users; let index = index" [value]="user"

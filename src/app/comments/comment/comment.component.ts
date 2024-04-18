@@ -13,7 +13,7 @@ export class CommentComponent {
   @Input({ required: true })
   comment!: Comment;
 
-  alterCommentHtml() {
-    return this.comment.content.replace('<ping ', '<a href=\"#\"').replace('ping>', 'a>')
+  alterCommentHtml() { // hack for project
+    return this.comment.content.replaceAll('<ping ', '<a href=\"#\" ').replaceAll('ping>', 'a>')
   }
 }

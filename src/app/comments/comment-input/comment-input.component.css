@@ -10,7 +10,7 @@
   min-height: 2rem;
   max-height: 4rem;
   overflow-y: scroll;
-  white-space: pre-wrap;
+  /* white-space: pre-wrap; */
 }
 
 ping {
