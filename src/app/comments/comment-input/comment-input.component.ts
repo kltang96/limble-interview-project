@@ -87,6 +87,9 @@ export class CommentInputComponent {
     }
 
     if(this.showMenu) {
+      if($event.key === 'Escape') {
+        this.resetMenuEvent()
+      }
       if(this.pingInitPosition != null && currentNode != null) {
         let userFilter = currentNode.nodeValue?.substring(this.pingInitPosition, cursorPosition) ?? ''
         this.users = this.userService.users.filter(
