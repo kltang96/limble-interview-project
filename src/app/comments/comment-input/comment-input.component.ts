@@ -17,6 +17,7 @@ export class CommentInputComponent {
   newCommentContent: FormControl = new FormControl('', Validators.required)
   showMenu = false
   pingInitPosition: number | undefined
+  pingRange: Range | undefined
   users: User[]
 
   @ViewChild('content') content: ElementRef = new ElementRef('div')
@@ -36,7 +37,6 @@ export class CommentInputComponent {
   onCommentFormPaste($event: ClipboardEvent) {
     $event.preventDefault()
     let sanitizedHtml = stripHtml($event.clipboardData?.getData("text/html") || '', {ignoreTags: ['ping', 'div', 'br']}).result
-    console.log("||||", sanitizedHtml)
     this._manualPaste(sanitizedHtml)
   }
 
@@ -74,9 +74,14 @@ export class CommentInputComponent {
     }
 
     if(this.showMenu) {
-      if(this.pingInitPosition != null) {
-        let userFilter = currentNode?.nodeValue?.substring(this.pingInitPosition, cursorPosition) ?? ''
-        this.users = this.userService.users.filter(user => {return user.name.toLowerCase().includes(userFilter.toLowerCase())})
+      if(this.pingInitPosition != null && currentNode != null) {
+        let userFilter = currentNode.nodeValue?.substring(this.pingInitPosition, cursorPosition) ?? ''
+        this.users = this.userService.users.filter(
+          user => {return user.name.toLowerCase().includes(userFilter.toLowerCase())}
+        )
+        this.pingRange = document.createRange()
+        this.pingRange.setStart(currentNode, this.pingInitPosition-1)
+        this.pingRange.setEnd(currentNode, cursorPosition)
       }
     }
   }
@@ -92,6 +97,9 @@ export class CommentInputComponent {
   private _insertPingTag(user: User) {
     const selection = window.getSelection();
     if (!selection?.rangeCount) return;
+    if(this.pingRange != null) {
+      selection.addRange(this.pingRange)
+    }
     selection.deleteFromDocument();
 
     let ping = document.createElement('ping')
@@ -108,6 +116,7 @@ export class CommentInputComponent {
   _resetMenuEvent() {
     this.showMenu = false
     this.pingInitPosition = undefined
+    this.pingRange = undefined
     this.users = this.userService.users
   }
 
