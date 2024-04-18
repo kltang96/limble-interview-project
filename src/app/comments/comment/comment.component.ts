@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { Comment } from '../models/comment';
 
 @Component({
@@ -6,9 +6,14 @@ import { Comment } from '../models/comment';
   standalone: true,
   imports: [],
   templateUrl: './comment.component.html',
-  styleUrl: './comment.component.css'
+  styleUrl: './comment.component.css',
+  encapsulation: ViewEncapsulation.None
 })
 export class CommentComponent {
   @Input({ required: true })
   comment!: Comment;
+
+  alterCommentHtml() {
+    return this.comment.content.replace('<ping ', '<a href=\"#\"').replace('ping>', 'a>')
+  }
 }

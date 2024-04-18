@@ -1,4 +1,5 @@
 <div class="comment">
-  <span><em>--Posted by</em> {{comment.userName}} <em>on</em> {{comment.time}}</span>
-  <p>{{comment.content}}</p>
+  <span><em>------ Posted by</em> {{comment.userName}} <em>on</em> {{comment.time}} ------</span>
+  <hr>
+  <div innerHtml="{{alterCommentHtml()}}"></div>
 </div>

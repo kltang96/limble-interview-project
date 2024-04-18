@@ -4,3 +4,10 @@
   margin: 0.5rem;
   padding: 0.5rem;
 }
+
+ping {
+  font-weight: bold;
+  color: blue;
+  user-select: all;
+  display: inline;
+}

@@ -61,9 +61,12 @@ export class CommentInputComponent {
 
   onKeyDown($event: any) {
     if(this.showMenu) {
-      if($event.key === 'Tab' || $event.key === ' ') {
+      if($event.key === 'Tab') {
         this.resetMenuEvent()
         $event.preventDefault()
+      }
+      if($event.key === ' ') {
+        this.resetMenuEvent()
       }
       if($event.key === 'Enter') {
         this.insertPing(this.users[0])
@@ -87,7 +90,7 @@ export class CommentInputComponent {
     }
 
     if(this.showMenu) {
-      if($event.key === 'Escape') {
+      if($event.key === 'Escape' || cursorPosition < (this.pingInitPosition ?? 0)) {
         this.resetMenuEvent()
       }
       if(this.pingInitPosition != null && currentNode != null) {
