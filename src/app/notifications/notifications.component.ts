@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { NotificationService } from 'app/services/notification.service';
+import { UserService } from 'app/services/user.service';
 
 @Component({
   selector: 'app-notifications',
@@ -8,5 +10,13 @@ import { Component } from '@angular/core';
   styleUrl: './notifications.component.css'
 })
 export class NotificationsComponent {
-  notificationCount = 0
+
+  constructor(public userService: UserService, public notificationService: NotificationService) { }
+
+  getNotificationCount() {
+    if(this.userService.currentUser?.userID.toString() == null) {
+      return null
+    }
+    return this.notificationService.notifications[this.userService.currentUser?.userID.toString()] || 0
+  }
 }

@@ -5,6 +5,7 @@ import { CommentComponent } from './comment/comment.component';
 import { Comment } from './models/comment';
 import { UserService } from 'app/services/user.service';
 import { CommentInputComponent } from './comment-input/comment-input.component';
+import { NotificationService } from 'app/services/notification.service';
 
 @Component({
   selector: 'app-comments',
@@ -16,7 +17,7 @@ import { CommentInputComponent } from './comment-input/comment-input.component';
 export class CommentsComponent {
   comments: Comment[] = comments
 
-  constructor(public userService: UserService) { }
+  constructor(public userService: UserService, public notificationService: NotificationService) { }
 
   addComment(content: string) {
     let comment: Comment = {
@@ -25,10 +26,10 @@ export class CommentsComponent {
       userName: this.userService.currentUser?.name || 'System',
       content: content
     }
+
+    this.notificationService.updateNotificationBasedOnComment(comment)
+
     comments.unshift(comment)
   }
 
-  stopEvent($event: Event) {
-    $event.preventDefault()
-  }
 }

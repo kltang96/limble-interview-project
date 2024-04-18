@@ -9,5 +9,7 @@ export class UserService {
   public users: User[] = users
   public currentUser: User | undefined
 
-  constructor() { }
+  constructor() {
+    this.currentUser = users[0]
+  }
 }
