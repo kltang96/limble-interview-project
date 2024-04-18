@@ -64,7 +64,7 @@ export class CommentInputComponent {
     let cursorPosition = window.getSelection()?.getRangeAt(0).startOffset ?? 0
     let currentNode = window.getSelection()?.getRangeAt(0).commonAncestorContainer
 
-    let isShowMenuEvent = $event.key === "@"
+    let isShowMenuEvent = currentNode?.nodeValue?.charAt(cursorPosition-1) === "@" // check that @ was just typed
       && (cursorPosition <= 1 //this checks if the key was typed immediately at the beginning of an html tag
         || currentNode?.nodeValue?.charAt(cursorPosition-2) === ' ') // OR if it was typed after a space
 
@@ -74,7 +74,11 @@ export class CommentInputComponent {
     }
 
     if(this.showMenu) {
-      if(this.pingInitPosition != null && currentNode != null) {
+      if($event.key === 'Tab' || $event.key === ' ') {
+        this.resetMenuEvent()
+        $event.preventDefault()
+      }
+      else if(this.pingInitPosition != null && currentNode != null) {
         let userFilter = currentNode.nodeValue?.substring(this.pingInitPosition, cursorPosition) ?? ''
         this.users = this.userService.users.filter(
           user => {return user.name.toLowerCase().includes(userFilter.toLowerCase())}
@@ -91,7 +95,7 @@ export class CommentInputComponent {
       this._insertPingTag(user)
     }
     this.onCommentFormChange()
-    this._resetMenuEvent()
+    this.resetMenuEvent()
   }
 
   private _insertPingTag(user: User) {
@@ -113,7 +117,7 @@ export class CommentInputComponent {
     selection.collapseToEnd()
   }
 
-  _resetMenuEvent() {
+  resetMenuEvent() {
     this.showMenu = false
     this.pingInitPosition = undefined
     this.pingRange = undefined

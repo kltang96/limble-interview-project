@@ -4,6 +4,7 @@
     (change)="onCommentFormChange()"
     (paste)="onCommentFormPaste($event)"
     (drop)="onCommentFormDrag($event)"
+    (blur)="resetMenuEvent()"
   ><div></div>
   </div>
   <menu name="user" *ngIf="showMenu">
